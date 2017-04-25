@@ -3,7 +3,6 @@
     <access origin="*"/>
     <access origin="cdvfile://*"/>
     <plugin name="cordova-plugin-device" spec="latest"/>
-    <plugin name="org.jboss.aerogear.cordova.push" spec="https://github.com/aerogear/aerogear-cordova-push#2.x-compat"/>
     <plugin name="cordova-plugin-camera" spec="latest"/>
     <plugin name="cordova-plugin-file-transfer" spec="latest"/>
     <plugin name="cordova-plugin-file" spec="latest"/>
@@ -18,8 +17,7 @@
     <plugin name="com.feedhenry.plugins.apis" spec="https://github.com/fheng/fh-cordova-plugins-api.git#fh0.0.6"/>
     <plugin name="com.feedhenry.plugins.apkdownloader" spec="https://github.com/feedhenry/fh-cordova-plugin-apkdownloader.git#fh0.0.1"/>
     <plugin name="cordova-plugin-statusbar" spec="latest"/>
-    <plugin name="com.feedhenry.plugin.device" spec="https://github.com/feedhenry/fh-cordova-plugin-device.git#fh0.0.2"/>
-    <plugin name="org.apache.cordova.whitelist" spec="https://github.com/apache/cordova-plugin-whitelist#1.2.2"/>
+    <plugin name="com.feedhenry.plugin.device" spec="https://github.com/feedhenry/fh-cordova-plugin-device.git#fh0.0.3"/>
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.1"/>
     <preference name="ShowSplashScreenSpinner" value="true"/>
     <preference name="AutoHideSplashScreen" value="true"/>
