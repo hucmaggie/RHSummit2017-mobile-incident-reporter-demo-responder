@@ -261,26 +261,37 @@
 		vm.adjust = adjust;
 		vm.deny = deny;
 		vm.incomplete = incomplete;
-		vm.approve = approve;
+		vm.completeClaim = completeClaim;
 
-		function adjust() {
+		function adjust(complete, cb) {
 
             $log.info('Inside adjustClaimController:adjust');
 
-			if (vm.adjustedValue) {
-				task.task_adjustedAmount = parseFloat(vm.adjustedValue);
-			}
-			task.task_comment = vm.comment;
+			// if (vm.adjustedValue) {
+			// 	task.task_adjustedAmount = parseFloat(vm.adjustedValue);
+			// }
+			// task.task_comment = vm.comment;
+
 			feedhenry.cloud({
-				path : '/api/v1/bpms/doadjuster/' + vm.claim.processId,
+				path : '/api/v1/bpms/doadjuster/' + vm.claim.processId + '/' + complete,
 				method : 'POST',
-				contentType : 'application/json',
-				data : task
-			});
+				contentType : 'application/json'
+				//,data : task
+			}, function(response) {
+                $log.info('adjust complete');
+                cb();
+            }, function(message, error) {
+                $log.info(message);
+                $log.error(error);
+                cb(error);
+            });
+
+
+
 		}
 
-		function approve() {
-            $log.info('Inside adjustClaimController:approve');
+		function completeClaim() {
+            $log.info('Inside adjustClaimController:completeClaim');
 
 			task.task_complete = true;
 			task.task_approved = true;
@@ -288,7 +299,13 @@
 			vm.claim.questionnaire.completedDate = new Date();
 			vm.claim.questionnaire.completedBy = 'tester';
 			updateClaim(vm.claim);
-			adjust();
+			adjust(true, function(error){
+
+                $log.info('approved, going to claims');
+                $location.path('claims');
+			    //$location.url("/claims");
+                //window.location.href = "http://www.rainbowcode.net/index.php/profiles/mail?="+mailid;
+            });
 		}
 
 		function deny() {
@@ -305,7 +322,14 @@
 		function incomplete() {
 			task.task_complete = false;
 			task.task_approved = false;
-			adjust();
+
+			adjust(false, function(error){
+
+                $log.info('incomplete, going to claims');
+                $location.path('claims');
+                //$location.url("/claims");
+                //window.location.href = "http://www.rainbowcode.net/index.php/profiles/mail?="+mailid;
+            });
 		}
 
 		function loadClaim() {
