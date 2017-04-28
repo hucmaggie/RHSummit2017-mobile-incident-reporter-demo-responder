@@ -17,8 +17,9 @@
             <div class="card" ng-repeat="claim in vm.claims | orderBy : '-processId'">
             <div class="item item-divider">
                 {{claim.incident.incidentType}}<a class="button button-small button-icon icon ion-arrow-right-c"
-                                                  style="float: right" ng-click="vm.loadClaimDetails(claim)"
-                                                  href="#/claimdetails"></a>
+                                                  style="float: right" ng-click="vm.loadClaimDetails(claim)"></a>
+
+                <!--href="#/claimdetails"-->
             </div>
             <div class="item item-text-wrap">
                 <ul class="list">

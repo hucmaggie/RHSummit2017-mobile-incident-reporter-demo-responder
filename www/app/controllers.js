@@ -5,7 +5,7 @@
 
 	angular.module('adjustorApp.controllers').controller('ExistingClaimController', existingClaimController).controller('ClaimDetailController', claimDetailController).controller('AdjustClaimController', adjustClaimController);
 
-	function existingClaimController($log, $timeout, $rootScope) {
+	function existingClaimController($log, $timeout, $state, $rootScope, $location) {
 
 	    $log.info('Inside Adjuststor:existingClaimController');
 		var vm = this;
@@ -19,6 +19,8 @@
 			if (claim) {
 				$rootScope.claim = claim;
 			}
+
+             $state.go("claimdetails"); // OR $location.path('claimdetails');
 		}
 
 		function loadClaims() {
@@ -247,7 +249,7 @@
 
 	}
 
-	function adjustClaimController($log, $timeout, $location, $rootScope, FHCObjectScrubber) {
+	function adjustClaimController($log, $timeout, $state, $location, $rootScope, FHCObjectScrubber) {
 		$log.info('Inside Adjuststor:AdjustClaimController');
 		var vm = this;
 
@@ -286,8 +288,6 @@
                 cb(error);
             });
 
-
-
 		}
 
 		function completeClaim() {
@@ -304,7 +304,8 @@
                 $log.info('approved, going to claims');
                 //$location.path('claims');
 			    //$location.url("/claims");
-                window.location.href = "#/claims";
+                //window.location.href = "#/claims";
+                $state.go('claims');
             });
 		}
 
@@ -318,10 +319,15 @@
 			adjust(false, function(error){
 
                 $log.info('incomplete, going to claims');
-                $location.path('claims');
+                //$location.path('claims');
                 //$location.url("/claims");
-                window.location.href = "#/claims";
+                //window.location.href = "#/claims";
+                $state.go('claims');
+
             });
+
+            $log.info('return');
+			return true;
 		}
 
         function deny() {
