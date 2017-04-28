@@ -260,7 +260,7 @@
 
 		vm.adjust = adjust;
 		vm.deny = deny;
-		vm.incomplete = incomplete;
+		vm.incompleteClaim = incompleteClaim;
 		vm.completeClaim = completeClaim;
 
 		function adjust(complete, cb) {
@@ -302,24 +302,16 @@
 			adjust(true, function(error){
 
                 $log.info('approved, going to claims');
-                $location.path('claims');
+                //$location.path('claims');
 			    //$location.url("/claims");
-                //window.location.href = "http://www.rainbowcode.net/index.php/profiles/mail?="+mailid;
+                window.location.href = "#/claims";
             });
 		}
 
-		function deny() {
-            $log.info('Inside adjustClaimController:deny');
-			task.task_complete = true;
-			task.task_approved = false;
-			vm.claim.approved = false;
-			vm.claim.questionnaire.completedDate = new Date();
-			vm.claim.questionnaire.completedBy = 'tester';
-			updateClaim(vm.claim);
-			adjust();
-		}
+		function incompleteClaim() {
 
-		function incomplete() {
+            $log.info('Inside incompleteClaim');
+
 			task.task_complete = false;
 			task.task_approved = false;
 
@@ -328,9 +320,20 @@
                 $log.info('incomplete, going to claims');
                 $location.path('claims');
                 //$location.url("/claims");
-                //window.location.href = "http://www.rainbowcode.net/index.php/profiles/mail?="+mailid;
+                window.location.href = "#/claims";
             });
 		}
+
+        function deny() {
+            $log.info('Inside adjustClaimController:deny');
+            task.task_complete = true;
+            task.task_approved = false;
+            vm.claim.approved = false;
+            vm.claim.questionnaire.completedDate = new Date();
+            vm.claim.questionnaire.completedBy = 'tester';
+            updateClaim(vm.claim);
+            adjust();
+        }
 
 		function loadClaim() {
             $log.info('Inside adjustClaimController:loadClaim');
