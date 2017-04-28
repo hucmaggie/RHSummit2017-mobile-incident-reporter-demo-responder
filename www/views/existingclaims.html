@@ -1,25 +1,48 @@
-<ion-view> <ion-header-bar align-title="center" class="bar bar-header bar-assertive"> <a class="button button-icon icon ion-help-circled" href="#/landing"></a>
-<h1 class="title">Existing Claims</h1>
-</ion-header-bar> <ion-content>
-<div class="card" ng-repeat="claim in vm.claims.list | orderBy : '-fields.id'" ng-show="claim.fields.approved === null">
-	<div class="item item-divider">
-		{{claim.fields.incident.type}}<a class="button button-small button-icon icon ion-arrow-right-c" style="float: right" ng-click="vm.loadClaimDetails(claim)" href="#/claimdetails"></a>
-	</div>
-	<div class="item item-text-wrap">
-		<ul class="list">
-			<li class="item"><strong>Process Id</strong><br>{{claim.fields.processId}}</li>
-			<li class="item"><strong>Claim Id</strong><br>{{claim.guid}}</li>
-			<li class="item"><strong>Date</strong><br>{{claim.fields.incident.incidentDate | date:'short'}}</li>
-			<li class="item"><strong ng-show="claim.fields.approved === null">Incomplete</strong><strong ng-show="claim.fields.approved">Approved</strong><strong ng-show="claim.fields.approved === false">Deny</strong><br> <i class="icon ion-checkmark-circled" ng-show="claim.fields.approved"></i><i
-				class="icon ion-close-circled" ng-show="claim.fields.approved === false"></i><i class="icon ion-alert-circled" ng-show="claim.fields.approved === null"></i></li>
-		</ul>
-	</div>
-</div>
-<div ng-if="vm.claimCount < 1">
-	<div class="card">
-		<div class="item item-text-wrap">
-			<i class="icon ion-alert-circled"></i> There are no existing claims!
-		</div>
-	</div>
-</div>
-</ion-content> </ion-view>
+<ion-view>
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive"><a
+            class="button button-icon icon ion-help-circled" href="#/landing"></a>
+        <h1 class="title">Existing Claims</h1>
+    </ion-header-bar>
+    <ion-content>
+
+        <div ng-if="vm.claimCount < 1">
+            <div class="card">
+                <div class="item item-text-wrap">
+                    <i class="icon ion-alert-circled"></i> There are no existing claims!
+                </div>
+            </div>
+        </div>
+
+        <div style="height:400px; overflow-y: auto">
+            <div class="card" ng-repeat="claim in vm.claims | orderBy : '-processId'">
+            <div class="item item-divider">
+                {{claim.incident.incidentType}}<a class="button button-small button-icon icon ion-arrow-right-c"
+                                                  style="float: right" ng-click="vm.loadClaimDetails(claim)"
+                                                  href="#/claimdetails"></a>
+            </div>
+            <div class="item item-text-wrap">
+                <ul class="list">
+                    <li class="item"><strong>Process Id</strong><br>{{claim.processId}}</li>
+                    <li class="item"><strong>Claim Id</strong><br>{{claim.processId}}</li>
+                    <li class="item"><strong>Date</strong><br>{{claim.incident.incidentDate | date:'short'}}</li>
+                    <li class="item"><strong>Status</strong><br><strong>{{claim.incidentStatus}}</strong>
+                        <!--<i class="icon ion-checkmark-circled" ng-show="claim.incident.incidentStatus === 'IN_PROGRESS'"></i>-->
+                        <i class="icon ion-close-circled" ng-show="claim.incidentStatus === 'COMPLETED'"></i>
+                        <i class="icon ion-alert-circled" ng-show="claim.incidentStatus === 'IN_PROGRESS'"></i>
+                    </li>
+
+                    <!--<li class="item">-->
+                    <!--<strong ng-show="claim.approved === null">Incomplete</strong>-->
+                    <!--<strong ng-show="claim.approved">Approved</strong>-->
+                    <!--<strong ng-show="claim.approved === false">Deny</strong><br> -->
+                    <!--<i class="icon ion-checkmark-circled" ng-show="claim.approved"></i>-->
+                    <!--<i class="icon ion-close-circled" ng-show="claim.approved === false"></i>-->
+                    <!--<i class="icon ion-alert-circled" ng-show="claim.approved === null"></i>-->
+                    <!--</li>-->
+                </ul>
+            </div>
+        </div>
+        </div>
+
+    </ion-content>
+</ion-view>

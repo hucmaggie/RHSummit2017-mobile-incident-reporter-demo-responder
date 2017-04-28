@@ -3,10 +3,10 @@
 </ion-header-bar> <ion-content class="has-footer">
 <div class="list">
 	<div class="item">
-		<strong>Process Id</strong><br>{{vm.claim.fields.processId}}
+		<strong>Process Id</strong><br>{{vm.claim.processId}}
 	</div>
 	<div class="item">
-		<strong>Stated Value</strong><br>{{vm.claim.fields.statedValue | currency}}
+		<strong>Stated Value</strong><br>{{vm.claim.statedValue | currency}}
 	</div>
 	<label class="item item-input item-stacked-label"> <span class="input-label"><strong>Adjusted Value</strong></span> <input type="text" placeholder="$XX.XX" ng-model="vm.adjustedValue">
 	</label>

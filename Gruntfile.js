@@ -23,7 +23,7 @@ module.exports = function (grunt) {
       // configurable paths
       app: 'www',
       url: '',
-      default_local_server_url: 'http://localhost:8001'
+      default_local_server_url: 'http://localhost:7001'
     },
 
     // Watches files for changes and runs tasks based on the changed files

@@ -1,55 +1,78 @@
-<ion-view> <ion-header-bar align-title="center" class="bar bar-header bar-assertive"> <a class="button button-icon icon ion-arrow-left-c" href="#/claims"></a>
-<h1 class="title">Claim Details</h1>
-<a class="button button-assertive" href="#/adjustclaim">Adjust Claim</a> </ion-header-bar> <ion-content>
-<div ng-show="vm.hasClaim" class="list">
-	<div class="item">
-		<strong>Process Id: </strong>{{vm.claim.fields.processId}}
-	</div>
-	<div class="item">
-		<strong>Claim Id: </strong>{{vm.claim.guid}}
-	</div>
-	<div class="item">
-		<strong>Status: </strong>{{vm.claim.type === 'activeClaim' ? 'Active' : 'Inactive'}}/{{vm.claim.fields.approved ? 'Approved' : 'Not Approved'}}
-	</div>
-	<div class="item">
-		<strong>Accident Date: </strong>{{vm.claim.fields.incident.incidentDate | date}}
-	</div>
-	<div class="item">
-		<strong>State: </strong>{{vm.claim.fields.incident.stateCode}}
-	</div>
-	<div class="item">
-		<strong>Zip Code: </strong>{{vm.claim.fields.incident.zipCode}}
-	</div>
-	<div class="item">
-		<strong>Stated Value: </strong>{{vm.claim.fields.statedValue | currency}}
-	</div>
-	<div class="item" ng-show="vm.showAdjustedValue">
-		<strong>Adjusted Value: </strong>{{vm.claim.fields.adjustedValue | currency}}
-	</div>
-	<div class="item" ng-repeat="q in vm.claim.fields.questionnaires">
-		<strong>{{q.name}}</strong>
-		<div ng-repeat="question in q.questions">{{question.description}} - {{q.answers[q.questions.indexOf(question)].strValue ? q.answers[q.questions.indexOf(question)].strValue : 'No answer'}}</div>
-	</div>
-	<div class="item item-divider">Photos</div>
-	<div class="item">
-		<i class="icon ion-loading-c" ng-if="vm.showUploadSpinner"></i>
-		<button class="button button-small icon-left ion-camera button-assertive" ng-click="vm.takePhoto(1)">Take Photo</button>
-		<button class="button button-small icon-left ion-folder button-assertive" ng-click="vm.takePhoto(0)">Select Photo</button>
-	</div>
-	<div class="item">
-		<div ng-repeat="photo in vm.claim.fields.photos track by photo.photoUrl">
-			<img width="100%" ng-src="{{photo.photoUrl}}">
-		</div>
-	</div>
-	<div class="item item-divider">
-		Comments<a style="float: right" class="button button-small button-assertive" ng-click="vm.saveComment()">Save Comment</a>
-	</div>
-	<div class="item" ng-show="vm.claim.fields.comments.length > 0">
-		<div class="item" ng-repeat="comment in vm.claim.fields.comments">{{comment.message}}</div>
-	</div>
-	<div class="item">
-		<label class="item item-input item-stacked-label"> <span class="input-label">Add Comment</span> <textarea type="textarea" ng-model="vm.comment"></textarea></label>
-	</div>
-</div>
-<div ng-hide="vm.hasClaim">No claim details.</div>
-</ion-content></ion-view>
+<ion-view>
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive"><a
+            class="button button-icon icon ion-arrow-left-c" href="#/claims"></a>
+        <h1 class="title">Claim Details</h1>
+        <a class="button button-assertive" href="#/adjustclaim">Adjust Claim</a></ion-header-bar>
+    <ion-content>
+        <div style="height:400px; overflow-y: auto">
+            <div ng-show="vm.hasClaim" class="list">
+                <div class="item">
+                    <strong>Process Id: </strong>{{vm.claim.processId}}
+                </div>
+                <div class="item">
+                    <strong>Claim Id: </strong>{{vm.claim.processId}}
+                </div>
+                <div class="item">
+                    <strong>Status: </strong>{{vm.claim.incident.incidentType}}
+                </div>
+                <!--<div class="item">-->
+                <!--<strong>Status: </strong>{{vm.claim.type === 'activeClaim' ? 'Active' : 'Inactive'}}/{{vm.claim.approved-->
+                <!--? 'Approved' : 'Not Approved'}}-->
+                <!--</div>-->
+                <div class="item">
+                    <strong>Accident Date: </strong>{{vm.claim.incident.incidentDate | date}}
+                </div>
+                <div class="item">
+                    <strong>State: </strong>{{vm.claim.incident.stateCode}}
+                </div>
+                <div class="item">
+                    <strong>Zip Code: </strong>{{vm.claim.incident.zipCode}}
+                </div>
+                <div class="item">
+                    <strong>Stated Value: </strong>{{vm.claim.statedValue | currency}}
+                </div>
+                <!--<div class="item" ng-show="vm.showAdjustedValue">-->
+                <!--<strong>Adjusted Value: </strong>{{vm.claim.adjustedValue | currency}}-->
+                <!--</div>-->
+                <div class="item">
+                    <strong>{{vm.claim.questionnaire.name}}</strong>
+                    <div ng-repeat="question in vm.claim.questionnaire.questions">{{question.description}} -
+                        {{vm.claim.questionnaire.answers[vm.claim.questionnaire.questions.indexOf(question)].strValue ?
+                        vm.claim.questionnaire.answers[vm.claim.questionnaire.questions.indexOf(question)].strValue :
+                        'No answer'}}
+                    </div>
+                </div>
+                <div class="item item-divider">Photos</div>
+                <div class="item">
+                    <i class="icon ion-loading-c" ng-if="vm.showUploadSpinner"></i>
+                    <button class="button button-small icon-left ion-camera button-assertive"
+                            ng-click="vm.takePhoto(1)">
+                        Take Photo
+                    </button>
+                    <button class="button button-small icon-left ion-folder button-assertive"
+                            ng-click="vm.takePhoto(0)">
+                        Select Photo
+                    </button>
+                </div>
+                <div class="item">
+                    <div ng-repeat="photo in vm.claim.photos track by $index">
+                        <img width="30%" ng-src="{{photo}}">
+                    </div>
+                </div>
+                <div class="item item-divider">
+                    Comments<a style="float: right" class="button button-small button-assertive"
+                               ng-click="vm.saveComment()">Save Comment</a>
+                    {{vm.claim.incidentComments.length}}
+                </div>
+                <div class="item" ng-show="vm.claim.incidentComments.length > 0">
+                    <div class="item" ng-repeat="comment in vm.claim.comments">{{comment.message}}</div>
+                </div>
+                <div class="item">
+                    <label class="item item-input item-stacked-label"> <span class="input-label">Add Comment</span>
+                        <textarea type="textarea" ng-model="vm.comment"></textarea></label>
+                </div>
+            </div>
+            <div ng-hide="vm.hasClaim">No claim details.</div>
+        </div>
+    </ion-content>
+</ion-view>

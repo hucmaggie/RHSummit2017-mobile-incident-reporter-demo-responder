@@ -6,32 +6,68 @@
 	angular.module('adjustorApp.controllers').controller('ExistingClaimController', existingClaimController).controller('ClaimDetailController', claimDetailController).controller('AdjustClaimController', adjustClaimController);
 
 	function existingClaimController($log, $timeout, $rootScope) {
-		$log.info('Inside Adjuststor:ExistingClaimController');
+
+	    $log.info('Inside Adjuststor:existingClaimController');
 		var vm = this;
 
 		vm.loadClaimDetails = loadClaimDetails;
 
 		function loadClaimDetails(claim) {
-			$log.info(claim);
+
+            $log.info("Inside existingClaimController:loadClaimDetails");
+			$log.info("Found claim: ", claim);
 			if (claim) {
 				$rootScope.claim = claim;
 			}
 		}
 
 		function loadClaims() {
+
+            $log.info("Inside existingClaimController:loadClaims");
+
 			feedhenry.cloud({
-				path : '/v1/api/claim',
+				path : '/v1/api/claims',
 				method : 'GET',
 				contentType : 'application/json'
 			}, function(response) {
 				$timeout(function() {
+                    $log.info("got Claims: ", response);
+
 					vm.claims = response;
 					vm.claimCount = 0;
-					vm.claims.list.forEach(function(elt, i) {
-						if (elt.fields.approved === null) {
-							vm.claimCount++;
-						}
-					});
+
+                    if (vm.claims != null || vm.claims != undefined) {
+
+                        vm.claims.forEach(function (claim) {
+
+                            vm.claimCount++;
+
+                            // lets fix the photos
+                            if (claim.incidentPhotoIds && claim.incidentPhotoIds.length > 0){
+                                claim.photos = [];
+                                claim.incidentPhotoIds.forEach(function(p, i) {
+
+                                    var link = 'http://services-incident-demo.apps.ocp.hucmaggie.com/photos/' + claim.processId + '/' + p.replace(/'/g, '');
+                                    claim.photos.push(link);
+                                    $log.info("photo link: ", link);
+                                });
+                            }
+
+                            // lets fix the comments
+                            if (claim.incidentComments && claim.incidentComments.length > 0){
+                                claim.comments = [];
+                                claim.incidentComments.forEach(function(c, i) {
+
+                                    claim.comments.push({message: c});
+
+                                    //$log.info("comment message: ", c);
+                                });
+                            }
+
+                        });
+
+                        $log.info("found " + vm.claimCount + " existing Claim(s)");
+                    }
 				});
 			}, function(message, error) {
 				$log.info(message);
@@ -63,16 +99,21 @@
 		}
 
 		function approveClaim() {
-			if (vm.claim && vm.claim.fields) {
-				vm.claim.fields.approved = true;
-				updateClaim(vm.claim.fields);
+            $log.info('Inside claimDetailController:approveClaim');
+
+			if (vm.claim && vm.claim.processId) {
+				vm.claim.approved = true;
+				updateClaim(vm.claim);
 			}
 		}
 
 		function loadClaim() {
+
+            $log.info('Inside claimDetailController:loadClaim');
+
 			if ($rootScope.claim) {
 				vm.claim = $rootScope.claim;
-				if (vm.claim.fields.adjustedValue) {
+				if (vm.claim.adjustedValue) {
 					vm.showAdjustedValue = true;
 				}
 				vm.hasClaim = true;
@@ -82,6 +123,8 @@
 		}
 
 		function takePhoto(source) {
+
+            $log.info('Inside takePhoto');
 			if (ready) {
 				vm.showUploadSpinner = true;
 				var options = {
@@ -107,6 +150,9 @@
 		}
 
 		function sendPhoto(imageUri) {
+
+            $log.info('Inside sendPhoto');
+
 			var url = $fh.getCloudURL();
 
 			var options = new FileUploadOptions();
@@ -115,18 +161,23 @@
 			options.mimeType = "image/jpeg";
 
 			var ft = new FileTransfer();
-			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.fields.processId + '/' + options.fileName), function(success) {
-				var response = success.response;
-				var parsedResponse = JSON.parse(response.replace('\\', ''));
-				var photo = {
-					photoUrl : parsedResponse.photoLink,
-					description : '',
-					uploaderName : vm.claim.fields.id,
-					uploadDate : new Date(),
-					takenDate : ''
-				}
-				vm.claim.fields.photos.push(photo);
-				updateClaim(vm.claim.fields);
+			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName), function(success) {
+
+                var link = success.link;
+                //incidentPhotoIds
+                vm.claim.photos.push(link);
+
+				// var response = success.response;
+				// var parsedResponse = JSON.parse(response.replace('\\', ''));
+				// var photo = {
+				// 	photoUrl : parsedResponse.photoLink,
+				// 	description : '',
+				// 	uploaderName : vm.claim.fields.id,
+				// 	uploadDate : new Date(),
+				// 	takenDate : ''
+				// }
+				//vm.claim.fields.photos.push(photo);
+				//updateClaim(vm.claim.fields);
 				vm.showUploadSpinner = false;
 			}, function(error) {
 				vm.showUploadSpinner = false;
@@ -135,31 +186,41 @@
 		}
 
 		function saveComment() {
+
+            $log.info('Inside saveComment');
+
 			if (vm.comment) {
 				feedhenry.cloud({
-					path : '/api/v1/bpms/add-comments/' + vm.claim.fields.processId,
+					path : '/api/v1/bpms/add-comments/' + vm.claim.processId,
 					method : 'POST',
 					contentType : 'application/json',
 					data : {
 						claimComments : vm.comment,
-						messageSource : 'adjuster'
+						messageSource : 'responder'
 					}
 				});
-				vm.claim.fields.comments.push({
+
+                $log.info("done saving Comment: ", vm.comment);
+
+                //incidentComments
+				vm.claim.comments.push({
 					message : vm.comment,
 					title : '',
 					commenterName : '',
 					commentDate : new Date()
 				});
 				vm.comment = '';
-				updateClaim(vm.claim.fields);
+				//updateClaim(vm.claim);
 			}
 		}
 
 		function updateClaim(claim) {
+
+            $log.info('Inside updateClaim');
+
 			if (claim) {
 				// Clean out any angular $resource metadata
-				FHCObjectScrubber.cleanObject(claim.questionnaires[0]);
+				FHCObjectScrubber.cleanObject(claim.questionnaire);
 				FHCObjectScrubber.cleanObject(claim.incident);
 				// POST to the could endpoint
 				feedhenry.cloud({
@@ -203,12 +264,15 @@
 		vm.approve = approve;
 
 		function adjust() {
+
+            $log.info('Inside adjustClaimController:adjust');
+
 			if (vm.adjustedValue) {
 				task.task_adjustedAmount = parseFloat(vm.adjustedValue);
 			}
 			task.task_comment = vm.comment;
 			feedhenry.cloud({
-				path : '/api/v1/bpms/doadjuster/' + vm.claim.fields.processId,
+				path : '/api/v1/bpms/doadjuster/' + vm.claim.processId,
 				method : 'POST',
 				contentType : 'application/json',
 				data : task
@@ -216,22 +280,25 @@
 		}
 
 		function approve() {
+            $log.info('Inside adjustClaimController:approve');
+
 			task.task_complete = true;
 			task.task_approved = true;
-			vm.claim.fields.approved = true;
-			vm.claim.fields.questionnaires[0].completedDate = new Date();
-			vm.claim.fields.questionnaires[0].completedBy = 'tester';
-			updateClaim(vm.claim.fields);
+			vm.claim.approved = true;
+			vm.claim.questionnaire.completedDate = new Date();
+			vm.claim.questionnaire.completedBy = 'tester';
+			updateClaim(vm.claim);
 			adjust();
 		}
 
 		function deny() {
+            $log.info('Inside adjustClaimController:deny');
 			task.task_complete = true;
 			task.task_approved = false;
-			vm.claim.fields.approved = false;
-			vm.claim.fields.questionnaires[0].completedDate = new Date();
-			vm.claim.fields.questionnaires[0].completedBy = 'tester';
-			updateClaim(vm.claim.fields);
+			vm.claim.approved = false;
+			vm.claim.questionnaire.completedDate = new Date();
+			vm.claim.questionnaire.completedBy = 'tester';
+			updateClaim(vm.claim);
 			adjust();
 		}
 
@@ -242,9 +309,10 @@
 		}
 
 		function loadClaim() {
+            $log.info('Inside adjustClaimController:loadClaim');
 			if ($rootScope.claim) {
 				vm.claim = $rootScope.claim;
-				if (vm.claim.fields.adjustedValue) {
+				if (vm.claim.adjustedValue) {
 					vm.showAdjustedValue = true;
 				}
 				vm.hasClaim = true;
@@ -254,9 +322,11 @@
 		}
 
 		function updateClaim(claim) {
+
+            $log.info('Inside adjustClaimController:updateClaim');
 			if (claim) {
 				// Clean out any angular $resource metadata
-				FHCObjectScrubber.cleanObject(claim.questionnaires[0]);
+				FHCObjectScrubber.cleanObject(claim.questionnaire);
 				FHCObjectScrubber.cleanObject(claim.incident);
 				// POST to the could endpoint
 				feedhenry.cloud({
