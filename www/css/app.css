@@ -165,3 +165,8 @@ footer>div>small {
     font-size: 27px;
     line-height: normal;
 }
+
+.incident-content-area {
+	min-height: 400px;
+	overflow-y: auto;
+}

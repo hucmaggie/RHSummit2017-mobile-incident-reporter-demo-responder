@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <div style="height:400px; overflow-y: auto">
+        <div class="incident-content-area">
             <div class="card" ng-repeat="claim in vm.claims | orderBy : '-processId'">
             <div class="item item-divider">
                 {{claim.incident.incidentType}}<a class="button button-small button-icon icon ion-arrow-right-c"
