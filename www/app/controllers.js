@@ -163,7 +163,7 @@
 			options.mimeType = "image/jpeg";
 
 			var ft = new FileTransfer();
-			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName), function(success) {
+			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName+ '/responder'), function(success) {
 
                 var link = success.link;
                 //incidentPhotoIds
