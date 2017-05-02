@@ -7,14 +7,14 @@
 
 	function existingClaimController($log, $timeout, $state, $rootScope, $location) {
 
-	    $log.info('Inside Adjuststor:existingClaimController');
+	    $log.info('Inside Adjustor:existingClaimController');
 		var vm = this;
 
 		vm.loadClaimDetails = loadClaimDetails;
 
 		function loadClaimDetails(claim) {
 
-            $log.info("Inside existingClaimController:loadClaimDetails");
+      $log.info("Inside existingClaimController:loadClaimDetails");
 			$log.info("Found claim: ", claim);
 			if (claim) {
 				$rootScope.claim = claim;
@@ -24,8 +24,7 @@
 		}
 
 		function loadClaims() {
-
-            $log.info("Inside existingClaimController:loadClaims");
+			$log.info("Inside claimsController:loadClaims");
 
 			feedhenry.cloud({
 				path : '/v1/api/claims',
@@ -33,52 +32,45 @@
 				contentType : 'application/json'
 			}, function(response) {
 				$timeout(function() {
-                    $log.info("got Claims: ", response);
-
+        	$log.info("got Claims: ", response);
 					vm.claims = response;
 					vm.claimCount = 0;
 
-                    if (vm.claims != null || vm.claims != undefined) {
-
-                        vm.claims.forEach(function (claim) {
-
-                            vm.claimCount++;
-
-                            // lets fix the photos
-                            if (claim.incidentPhotoIds && claim.incidentPhotoIds.length > 0){
-                                claim.photos = [];
-                                claim.incidentPhotoIds.forEach(function(p, i) {
-
-                                    var link = 'http://services-incident-demo.apps.ocp.hucmaggie.com/photos/' + claim.processId + '/' + p.replace(/'/g, '');
-                                    claim.photos.push(link);
-                                    $log.info("photo link: ", link);
-                                });
-                            }
-
-                            // lets fix the comments
-                            if (claim.incidentComments && claim.incidentComments.length > 0){
-                                claim.comments = [];
-                                claim.incidentComments.forEach(function(c, i) {
-
-                                    claim.comments.push({message: c});
-
-                                    //$log.info("comment message: ", c);
-                                });
-                            }
-
+					if (vm.claims != null || vm.claims != undefined){
+                vm.claims.forEach(function(claim) {
+                    vm.claimCount++;
+                    // lets fix the photos
+                    if (claim.incidentPhotoIds && claim.incidentPhotoIds.length > 0){
+                        claim.photos = [];
+                        claim.incidentPhotoIds.forEach(function(p, i) {
+                            var link = 'http://services-incident-demo.apps.ocp.hucmaggie.com/photos/' + claim.processId + '/' + p.replace(/'/g, '');
+                            claim.photos.push(link);
+                            $log.info("photo link: ", link);
                         });
-
-                        $log.info("found " + vm.claimCount + " existing Claim(s)");
                     }
+
+                    // lets fix the comments
+                    if (claim.incidentComments && claim.incidentComments.length > 0) {
+                        claim.comments = [];
+                        claim.incidentComments.forEach(function(c, i) {
+                        	claim.comments.push({message: c});
+                        });
+                    }
+                });
+                $log.info("found " + vm.claimCount + " existing Claim(s)");
+					}
+					else {
+                $log.info("no existing Claims");
+					}
+
 				});
 			}, function(message, error) {
-				$log.info(message);
+				$log.info("loadClaims: " + message);
 				$log.error(error);
 			});
 		}
 
 		loadClaims();
-
 	}
 
 	function claimDetailController($log, $location, $rootScope, $timeout, $ionicPlatform, $cordovaCamera, FHCObjectScrubber) {
@@ -110,8 +102,7 @@
 		}
 
 		function loadClaim() {
-
-            $log.info('Inside claimDetailController:loadClaim');
+			$log.info('Inside claimDetailController:loadClaim');
 
 			if ($rootScope.claim) {
 				vm.claim = $rootScope.claim;
@@ -124,74 +115,11 @@
 			}
 		}
 
-		function takePhoto(source) {
-
-            $log.info('Inside takePhoto');
-			if (ready) {
-				vm.showUploadSpinner = true;
-				var options = {
-					quality : 100,
-					destinationType : 1,
-					sourceType : source,
-					encodingType : 0
-				};
-				$cordovaCamera.getPicture(options).then(function(imageData) {
-					var imageUri = imageData;
-					sendPhoto(imageUri);
-					$cordovaCamera.cleanup(function() {
-						$log.info('Cleanup Sucess');
-					}, function() {
-						$log.info('Cleanup Failure');
-					});
-				}, function(err) {
-					$log.info('Error');
-				});
-			} else {
-				$log.info('Not ready!');
-			}
-		}
-
-		function sendPhoto(imageUri) {
-
-            $log.info('Inside sendPhoto');
-
-			var url = $fh.getCloudURL();
-
-			var options = new FileUploadOptions();
-			options.fileKey = "file";
-			options.fileName = imageUri.substr(imageUri.lastIndexOf('/') + 1);
-			options.mimeType = "image/jpeg";
-
-			var ft = new FileTransfer();
-			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName), function(success) {
-
-                var link = success.link;
-                //incidentPhotoIds
-                vm.claim.photos.push(link);
-
-				// var response = success.response;
-				// var parsedResponse = JSON.parse(response.replace('\\', ''));
-				// var photo = {
-				// 	photoUrl : parsedResponse.photoLink,
-				// 	description : '',
-				// 	uploaderName : vm.claim.fields.id,
-				// 	uploadDate : new Date(),
-				// 	takenDate : ''
-				// }
-				//vm.claim.fields.photos.push(photo);
-				//updateClaim(vm.claim.fields);
-				vm.showUploadSpinner = false;
-			}, function(error) {
-				vm.showUploadSpinner = false;
-				$log.error(error);
-			}, options);
-		}
-
 		function saveComment() {
 
-            $log.info('Inside saveComment');
+      $log.info("Inside saveComment: ", vm.comment);
 
-			if (vm.comment) {
+      if (vm.comment) {
 				feedhenry.cloud({
 					path : '/api/v1/bpms/add-comments/' + vm.claim.processId,
 					method : 'POST',
@@ -202,9 +130,11 @@
 					}
 				});
 
-                $log.info("done saving Comment: ", vm.comment);
+        $log.info("done saving Comment: ", vm.comment);
 
-                //incidentComments
+				if (!vm.claim.comments) {
+					vm.claim.comments = [];
+				}
 				vm.claim.comments.push({
 					message : vm.comment,
 					title : '',
@@ -212,13 +142,74 @@
 					commentDate : new Date()
 				});
 				vm.comment = '';
-				//updateClaim(vm.claim);
 			}
+		}
+
+		function takePhoto(pictureSourceId) {
+			$log.info("Inside takePhoto, pictureSourceId: " + pictureSourceId);
+
+			if (ready) {
+				vm.showUploadSpinner = true;
+				var options = {
+					quality : 100,
+					destinationType : Camera.DestinationType.FILE_URI,
+					sourceType : pictureSourceId,
+					correctOrientation: true,
+					encodingType : 0
+				};
+				$cordovaCamera.getPicture(options).then(function(imageData) {
+					var imageUri = imageData;
+					if (imageUri) {
+						sendPhoto(imageUri);
+						$cordovaCamera.cleanup(function() {
+							$log.info('Cleanup Sucesss');
+						}, function() {
+							$log.info('Cleanup Failure');
+						});
+					} else {
+						$log.error("ImageUri not retrieved from camera!");
+					}
+					vm.showUploadSpinner = false;
+				}, function(err) {
+					$log.info('Error');
+					vm.showUploadSpinner = false;
+				});
+			} else {
+				$log.info('Not ready for pictures!');
+			}
+		}
+
+		function sendPhoto(imageUri) {
+      $log.info("Inside sendPhoto, imageUri: " + imageUri);
+			var url = $fh.getCloudURL();
+
+			var options = new FileUploadOptions();
+			options.fileKey = "file";
+			options.fileName = imageUri.substr(imageUri.lastIndexOf('/') + 1);
+			options.mimeType = "image/jpeg";
+
+			var ft = new FileTransfer();
+			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName), function(success) {
+				var responseData = JSON.parse(success.response);
+				var link = responseData.link;
+
+				$rootScope.$apply(function() {
+						$log.info("Scope apply for link: " + link);
+						if (!vm.claim.photos) {
+							vm.claim.photos = [];
+						}
+						vm.claim.photos.push(link);
+				});
+				vm.showUploadSpinner = false;
+			}, function(error) {
+				vm.showUploadSpinner = false;
+				$log.error(error);
+			}, options);
 		}
 
 		function updateClaim(claim) {
 
-            $log.info('Inside updateClaim');
+    	$log.info('Inside updateClaim');
 
 			if (claim) {
 				// Clean out any angular $resource metadata

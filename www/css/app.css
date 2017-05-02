@@ -128,7 +128,7 @@ footer>div>small {
 	border: 1px solid #000000;
 	box-sizing: border-box;
 }
-
+/*  none of this was applied earlier due to left-over merge text
 .input-div {
 	width: 100%;
 	padding: 5px 0 5px 0;
@@ -152,7 +152,7 @@ footer>div>small {
 	right: 0;
 	margin: auto;
 }
-
+*/
 #landing-page {
     background-color: #B71C1C;
     border-color: #B71C1C;
@@ -169,4 +169,15 @@ footer>div>small {
 .incident-content-area {
 	min-height: 400px;
 	overflow-y: auto;
+}
+
+.incident-photo-gallery div {
+		padding: 5px;
+		float: left;
+		width: 33%;
+}
+
+.incident-photo-gallery div img {
+	float: left;
+	width: 100%;
 }
