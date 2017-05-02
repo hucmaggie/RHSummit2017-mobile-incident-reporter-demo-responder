@@ -1,8 +1,9 @@
 <ion-view>
     <ion-header-bar align-title="center" class="bar bar-header bar-assertive"><a
             class="button button-icon icon ion-arrow-left-c" href="#/claims"></a>
-        <h1 class="title">Incident Details</h1>
-        <a class="button button-assertive" href="#/adjustclaim">Adjust Claim</a></ion-header-bar>
+        <h1 class="title">Ticket Details</h1>
+        <a ng-show="vm.claim.incidentStatus === 'IN_PROGRESS'" class="button button-assertive" href="#/adjustclaim">Close Ticket</a>
+    </ion-header-bar>
     <ion-content>
         <div class="incident-content-area">
             <div ng-show="vm.hasClaim" class="list">
@@ -69,6 +70,6 @@
             </div>
         </div>
 
-        <div ng-hide="vm.hasClaim">No claim details.</div>
+        <div ng-hide="vm.hasClaim">No ticket details.</div>
     </ion-content>
 </ion-view>

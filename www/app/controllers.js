@@ -77,38 +77,24 @@
 		$log.info('Inside Adjuststor:ClaimDetailController');
 		var vm = this;
 
+		vm.answers = {};
 		vm.hasClaim = false;
-		vm.showAdjustedValue = false;
 		vm.showUploadSpinner = false;
 		var ready = false;
 
-		vm.adjustValue = adjustValue;
 		vm.approveClaim = approveClaim;
 		vm.takePhoto = takePhoto;
 		vm.updateClaim = updateClaim;
 		vm.saveComment = saveComment;
-
-		function adjustValue() {
-			vm.showAdjustedValue = true;
-		}
-
-		function approveClaim() {
-            $log.info('Inside claimDetailController:approveClaim');
-
-			if (vm.claim && vm.claim.processId) {
-				vm.claim.approved = true;
-				updateClaim(vm.claim);
-			}
-		}
 
 		function loadClaim() {
 			$log.info('Inside claimDetailController:loadClaim');
 
 			if ($rootScope.claim) {
 				vm.claim = $rootScope.claim;
-				if (vm.claim.adjustedValue) {
-					vm.showAdjustedValue = true;
-				}
+				vm.claim.questionnaire.answers.forEach(function(ans){
+						vm.answers[ans.questionId] = ans;
+				});
 				vm.hasClaim = true;
 			} else {
 				$location.path('/');
@@ -189,7 +175,7 @@
 			options.mimeType = "image/jpeg";
 
 			var ft = new FileTransfer();
-			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName), function(success) {
+			ft.upload(imageUri, encodeURI(url + '/api/v1/bpms/upload-photo/' + vm.claim.processId + '/' + options.fileName+ '/responder'), function(success) {
 				var responseData = JSON.parse(success.response);
 				var link = responseData.link;
 
@@ -205,6 +191,15 @@
 				vm.showUploadSpinner = false;
 				$log.error(error);
 			}, options);
+		}
+
+		function approveClaim() {
+      $log.info('Inside claimDetailController:approveClaim');
+
+			if (vm.claim && vm.claim.processId) {
+				vm.claim.approved = true;
+				updateClaim(vm.claim);
+			}
 		}
 
 		function updateClaim(claim) {
