@@ -1,4 +1,9 @@
 {
+  "android": {
+    "senderID": "692155487613",
+    "variantID": "c21b2487-ef81-4fc2-94b4-3b33d2713696",
+    "variantSecret": "651a9fa8-520c-4cd3-8f12-128c3a2a971b"
+  },
   "appid": "a5evrqklkvnbkmgutoqmkqev",
   "appkey": "68ba4c178bab45b0e70c8a036435f8aa41af098a",
   "apptitle": "responder",
