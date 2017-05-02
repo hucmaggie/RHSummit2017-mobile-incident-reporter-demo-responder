@@ -2,7 +2,11 @@
   "appid": "a5evrqklkvnbkmgutoqmkqev",
   "appkey": "68ba4c178bab45b0e70c8a036435f8aa41af098a",
   "apptitle": "responder",
-  "connectiontag": "0.0.1",
+  "connectiontag": "0.0.16",
   "host": "https://mhu.us.demos.redhatmobile.com",
+  "ios": {
+    "variantID": "b530702a-f67d-4635-8bf4-e0ea1fdfdbd5",
+    "variantSecret": "bff16d73-80d0-4da1-8bbc-8b8d5e7ae7da"
+  },
   "projectid": "a5evrqm2hnigfqhjuyvvq4ys"
 }
