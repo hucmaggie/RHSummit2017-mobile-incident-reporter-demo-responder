@@ -14,13 +14,15 @@
 				// org.apache.cordova.statusbar required
 				StatusBar.styleDefault();
 			}
-			$fh.push((function(event) {
-				alert(event.alert || event.message);
-			}), (function() {
-				console.log("success");
-			}), function(error) {
-				console.log("error: " + error);
-			});
+			document.addEventListener('deviceready', function () {
+				$fh.push((function(event) {
+					alert(event.alert || event.message);
+				}), (function() {
+					console.log("notification success: ", event.message);
+				}), function(error) {
+					console.log("notification error: " + error);
+				});
+			}, false);
 		});
 	}).config(function($stateProvider, $urlRouterProvider) {
 		$urlRouterProvider.otherwise('/landing');
